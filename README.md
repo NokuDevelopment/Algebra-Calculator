@@ -1,6 +1,6 @@
 # Algebra Calculator
 
-Algebra Calculator is a powerful desktop app designed to perform algebraic operations. It targets the Windows 10 audience and can be downloaded on the Microsoft Store under the name "Algebra Calculator".
+Algebra Calculator is a powerful desktop app designed to perform algebraic operations. It targets the Windows 10 desktop usersand can be downloaded on the Microsoft Store under the name "Algebra Calculator".
 
 Features:
 - Standard calculator
