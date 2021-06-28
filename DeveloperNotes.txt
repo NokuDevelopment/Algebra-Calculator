@@ -1,0 +1,11 @@
+﻿Version 2.1.x Content update
+
+Features added:
+- Changed detect page interface
+- Removed detect equation mode
+- Added parenthesis recursion
+- Added systems of linear equations
+- Added systems of three linear equations
+
+To do:
+- Add solve for x mode
