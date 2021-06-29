@@ -5,6 +5,7 @@ using System.Linq;
 using Windows.UI.Xaml.Controls;
 
 //TODO Change the version number on the "help" page every build
+///TODO OPTIONAL consider adding UWP identifier to build number
 
 namespace AlgebraCalculatorApp.Views
 {
@@ -539,6 +540,7 @@ namespace AlgebraCalculatorApp.Views
             {
                 eq = replaceX(eq);
             }
+
             if (eq.Contains('('))
             {
                 eq = solveParenthesis(eq);
