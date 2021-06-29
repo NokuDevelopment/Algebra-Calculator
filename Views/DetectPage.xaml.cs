@@ -540,7 +540,6 @@ namespace AlgebraCalculatorApp.Views
             {
                 eq = replaceX(eq);
             }
-
             if (eq.Contains('('))
             {
                 eq = solveParenthesis(eq);
