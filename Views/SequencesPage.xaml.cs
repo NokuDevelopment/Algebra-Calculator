@@ -367,7 +367,7 @@ namespace AlgebraCalculatorApp.Views
 
             for (int i = startVal; i <= endVal; i++)
             {
-                sigmaSum += Int32.Parse(DetectPage.solveItem(eqString, i.ToString()));
+                sigmaSum += Int32.Parse(DetectPage.SolveItem(eqString, i.ToString()));
             }
 
             return $"Σ {eq} = {sigmaSum.ToString()}";
@@ -383,7 +383,7 @@ namespace AlgebraCalculatorApp.Views
             Console.WriteLine(lastResult.ToString());
             for (int i = 0; i < difference; i++)
             {
-                lastResult = Int32.Parse(DetectPage.solveItem(eqString, lastResult.ToString()));
+                lastResult = Int32.Parse(DetectPage.SolveItem(eqString, lastResult.ToString()));
             }
 
             return $"f({nVal.ToString()}) = {lastResult.ToString()}";

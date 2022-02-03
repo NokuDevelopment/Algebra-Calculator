@@ -2,10 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
-
-//TODO Change the version number on the "help" page every build
-///TODO OPTIONAL consider adding UWP identifier to build number
 
 namespace AlgebraCalculatorApp.Views
 {
@@ -227,14 +226,13 @@ namespace AlgebraCalculatorApp.Views
             }
             else if (mode == "Quadratics")
             {
-                mode = "quadratic";
-
-                foreach (char c in eq)
+                if (eq.Contains('('))
                 {
-                    if (c == '(')
-                    {
-                        mode = "FOIL";
-                    }
+                    mode = "FOIL";
+                }
+                else
+                {
+                    mode = "quadratic";
                 }
 
                 if (mode == "quadratic")
@@ -245,6 +243,10 @@ namespace AlgebraCalculatorApp.Views
                 {
                     result = expandEq(eq);
                 }
+            }
+            else if (mode == "Solve for Zeroes")
+            {
+                result = SolveForZeroesLauncher(eq);
             }
             else if (mode == "Solve Logs")
             {
@@ -258,9 +260,18 @@ namespace AlgebraCalculatorApp.Views
             {
                 result = findFactors(eq);
             }
-            else if(mode == "Systems of Linear Equations")
+            else if (mode == "Systems of Linear Equations")
             {
                 result = SystemsLauncher(eq);
+            }
+            else if (mode == "Linear Regression")
+            {
+                result = SolveLinReg(eq);
+            }
+            else if(mode == "Search Graph")
+            {
+                StatusLabel.Text = "Calculating values (may take a while)";
+                SearchForValueLauncher(eq, xval);
             }
 
             if (result.Contains('%'))
@@ -285,276 +296,262 @@ namespace AlgebraCalculatorApp.Views
                 }
             }
 
-            return solveItem(eq, xval);
+            return SolveItem(eq, xval);
         }
 
-        public static string solveItem(string eq, string xval)
+        public static string SolveItem(string equation, string xval)
         {
-            //---------------------------------------------------------------------//
-            //functions declaration begins here
-
-            //function to replace x in equation with the user provided x value
-            string replaceX(string stringToReplace)
+            //do all calculations using list format
+            //method also replaces all instances of "x"
+            (List<string> equationList, bool completedSuccessfully) = formatList(equation, xval);
+            if (completedSuccessfully == false)
             {
-                //custom split method with no deliminator
-                List<string> itemsList = new List<string>();
-
-                foreach (char c in eq)
-                {
-                    itemsList.Add(c.ToString());
-                }
-
-                //if x has a coefficient, made it *x, otherwise insert x
-                for (int i = 0; i < itemsList.Count; i++)
-                {
-                    if (itemsList[i] == "x")
-                    {
-                        try
-                        {
-                            //check if item before is number or symbol
-                            Int32.Parse(itemsList[i - 1]);
-                            itemsList[i] = $"*{xval}";
-                        }
-                        catch
-                        {
-                            itemsList[i] = xval;
-                        }
-                    }
-                }
-
-                //condense the list into a string and return it
-                string resultval = string.Join("", itemsList);
-                return resultval;
+                return "Syntax Error";
             }
 
-            //recursive function to simplify all parenthesis
-            string solveParenthesis(string eqString)
+            string tempstring = string.Join("", equationList);
+            Console.WriteLine(tempstring);
+
+            //solve parenthesis via recursion
+            equationList = solveParenthesis(equationList);
+
+            //Solve PEMDAS
+            equationList = solveExponents(equationList);
+            equationList = solveMultiplication(equationList);
+            string eqresult = solveAddition(equationList);
+
+            //return result
+            return eqresult;
+
+            //method to replace instances of x and format string into list
+            (List<string>, bool) formatList(string eq, string x)
             {
-                //make sure there are only full sets of parenthesis
-                int opencount = 0;
-                int closedcount = 0;
-                foreach(char c in eqString)
+                List<string> eqList = new List<string>();
+                string temp = "";
+                for (int i = 0; i < eq.Length; i++)
                 {
-                    if(c == '(')
-                    {
-                        opencount += 1;
-                    }
-                    else if(c == ')')
-                    {
-                        closedcount += 1;
-                    }
-                }
-
-                if(opencount != closedcount)
-                {
-                    return "";
-                }
-                if(opencount == 0)
-                {
-                    return eqString;
-                }
-
-                //find the outside parenthesis
-                for (int i = 0; i < eqString.Length; i++)
-                {
-                    //when open parenthesis is found
-                    if (eqString[i] == '(')
-                    {
-                        int openParenthesis = i;
-                        int closeParenthesis = 0;
-                        //find close parenthesis
-                        for (int m = (eqString.Length - 1); m >= 0; m--)
-                        {
-                            if (eqString[m] == ')')
-                            {
-                                closeParenthesis = m;
-                                break;
-                            }
-
-                            if (m == 0)
-                            {
-                                return "";
-                            }
-                        }
-
-                        //get items in between the two parenthesis
-                        string inParenthesis = "";
-                        for (int m = (openParenthesis + 1); m < closeParenthesis; m++)
-                        {
-                            inParenthesis += eqString[m];
-                        }
-
-                        //recursion to solve inParenthesis
-                        inParenthesis = findType(inParenthesis, xval);
-
-                        //replace the parenthesis with the result; check to see if multiplication is present
-                        string pre = "";
-                        string post = "";
-                        //assign a value to pre and post
-                        for (int n = 0; n < eqString.Length; n++)
-                        {
-                            if (n < openParenthesis)
-                            {
-                                pre += eqString[n];
-                            }
-                            if (n > closeParenthesis)
-                            {
-                                post += eqString[n];
-                            }
-                        }
-
-                        //create the new string
-                        try
-                        {
-                            Int32.Parse(eqString[openParenthesis - 1].ToString());
-                            eqString = $"{pre}*{inParenthesis}{post}";
-                        }
-                        catch
-                        {
-                            eqString = $"{pre}{inParenthesis}{post}";
-                        }
-                    }
-                }
-
-                return eqString;
-            }
-
-            //function to create a list from the full eq
-            List<string> createEqList(string eqString)
-            {
-                List<string> resultList = new List<string>();
-                string current = "";
-
-                for (int i = 0; i < eqString.Length; i++)
-                {
+                    //if eq[i] is an integer, add it to temp string
+                    //otherwise, create a new list item for eq[i] and the symbol
                     try
                     {
-                        Int32.Parse(eqString[i].ToString());
-                        current += eqString[i].ToString();
+                        Int32.Parse(eq[i].ToString());
+                        temp += eq[i];
                     }
                     catch
                     {
-                        if (eqString[i] == '.')
+                        //symbols: + - * / ( ) ^ . x
+                        switch (eq[i])
                         {
-                            current += ".";
-                        }
-                        else
-                        {
-                            resultList.Add(current);
-                            resultList.Add(eqString[i].ToString());
-                            current = "";
+                            case '.':
+                                temp += '.';
+                                break;
+                            case '+':
+                                eqList.Add(temp);
+                                eqList.Add("+");
+                                temp = "";
+                                break;
+                            case '-':
+                                eqList.Add(temp);
+                                eqList.Add("-");
+                                temp = "";
+                                break;
+                            case '*':
+                                eqList.Add(temp);
+                                eqList.Add("*");
+                                temp = "";
+                                break;
+                            case '/':
+                                eqList.Add(temp);
+                                eqList.Add("/");
+                                temp = "";
+                                break;
+                            case '^':
+                                eqList.Add(temp);
+                                eqList.Add("^");
+                                temp = "";
+                                break;
+                            case '(':
+                                if (eqList[eqList.Count - 1] == ")")
+                                {
+                                    eqList.Add("*");
+                                    eqList.Add("(");
+                                    break;
+                                }
+                                if (temp == "")
+                                {
+                                    eqList.Add("(");
+                                    break;
+                                }
+                                eqList.Add(temp);
+                                temp = "";
+                                eqList.Add("*");
+                                eqList.Add("(");
+                                break;
+                            case ')':
+                                if (temp != "")
+                                {
+                                    eqList.Add(temp);
+                                    temp = "";
+                                    eqList.Add(")");
+                                    break;
+                                }
+                                else
+                                {
+                                    eqList.Add(")");
+                                    break;
+                                }
+                            case 'x':
+                                if (temp == "")
+                                {
+                                    eqList.Add(x);
+                                    break;
+                                }
+                                eqList.Add(temp);
+                                temp = "";
+                                eqList.Add("*");
+                                eqList.Add(x);
+                                break;
+                            default:
+                                return (new List<string>(), false);
                         }
                     }
                 }
 
-                if (current != "")
+                //if the last value is an integer, it wasn't added during the loop
+                if (temp != "")
                 {
-                    resultList.Add(current);
+                    eqList.Add(temp);
                 }
 
-                return resultList;
-            }
-
-            //function to solve all operations
-            List<string> solveOperations(List<string> eqList)
-            {
-                //perform exponents, multiplication, and division left to right
-                for (int i = 0; i < eqList.Count; i++)
+                //remove instances of empty strings
+                while (eqList.Contains(""))
                 {
-                    if (eqList[i] == "^")
-                    {
-                        eqList[i - 1] = (Math.Pow(double.Parse(eqList[i - 1]), double.Parse(eqList[i + 1]))).ToString();
-                        try
-                        {
-                            eqList.RemoveAt(i + 1);
-                        }
-                        catch { }
-                        eqList.RemoveAt(i);
-                        i -= 1;
-                        continue;
-                    }
-                    if (eqList[i] == "*")
-                    {
-                        eqList[i - 1] = (float.Parse(eqList[i - 1]) * float.Parse(eqList[i + 1])).ToString();
-                        try
-                        {
-                            eqList.RemoveAt(i + 1);
-                        }
-                        catch { }
-                        eqList.RemoveAt(i);
-                        i -= 1;
-                        continue;
-                    }
-                    if (eqList[i] == "/")
-                    {
-                        eqList[i - 1] = (float.Parse(eqList[i - 1]) / float.Parse(eqList[i + 1])).ToString();
-                        try
-                        {
-                            eqList.RemoveAt(i + 1);
-                        }
-                        catch { }
-                        eqList.RemoveAt(i);
-                        i -= 1;
-                        continue;
-                    }
+                    eqList.Remove("");
                 }
 
-                //perform addition and subtraction
-                for (int i = 0; i < eqList.Count; i++)
+                return (eqList, true);
+            }
+
+            List<string> solveParenthesis(List<string> inputList)
+            {
+                int level = 0;   //level is the number of parenthesis you're inside- level 0 = no parenthesis
+                int openingParenthesis = 0;   //the index of the opening parenthesis
+                for (int i = 0; i < inputList.Count; i++)
                 {
-                    if (eqList[i] == "+")
+                    if (level == 0)
                     {
-                        eqList[i - 1] = (float.Parse(eqList[i - 1]) + float.Parse(eqList[i + 1])).ToString();
-                        try
+                        if (inputList[i] == "(")
                         {
-                            eqList.RemoveAt(i + 1);
+                            level = 1;
+                            openingParenthesis = i;
                         }
-                        catch { }
-                        eqList.RemoveAt(i);
-                        i -= 1;
                         continue;
                     }
-                    if (eqList[i] == "-")
+                    if (level > 0)
                     {
-                        eqList[i - 1] = (float.Parse(eqList[i - 1]) - float.Parse(eqList[i + 1])).ToString();
-                        try
+                        if (inputList[i] == "(")
                         {
-                            eqList.RemoveAt(i + 1);
+                            level += 1;
+                            continue;
                         }
-                        catch { }
-                        eqList.RemoveAt(i);
-                        i -= 1;
-                        continue;
+                        if (inputList[i] == ")")
+                        {
+                            level -= 1;
+                            if (level == 0)
+                            {
+                                //all parenthesis have been exited out of
+                                string parenthesisItem = "";
+                                for (int n = openingParenthesis + 1; n < i; n++)
+                                {
+                                    parenthesisItem += inputList[n];
+                                }
+                                string parenthesisResult = SolveItem(parenthesisItem, xval);
+
+                                //delete the old parenthesis and replace with the result
+                                inputList[openingParenthesis] = parenthesisResult;
+
+                                for (int n = openingParenthesis + 1; n <= i; n++)
+                                {
+                                    inputList.RemoveAt(openingParenthesis + 1);
+                                }
+
+                                //reset values
+                                i = openingParenthesis;
+                                openingParenthesis = 0;
+                            }
+                        }
                     }
                 }
 
-                return eqList;
+                return inputList;
             }
 
-
-            //-------------------------------------------------------------------------------//
-            //item processing begins here
-
-            //subsitute x and parenthesis in eq
-            if (eq.Contains('x'))
+            List<string> solveExponents(List<string> inputList)
             {
-                eq = replaceX(eq);
+                for (int i = 0; i < inputList.Count; i++)
+                {
+                    if (inputList[i] == "^")
+                    {
+                        double result = Math.Pow(float.Parse(inputList[i - 1]), float.Parse(inputList[i + 1]));
+                        inputList[i - 1] = result.ToString();
+                        inputList.RemoveAt(i + 1);
+                        inputList.RemoveAt(i);
+                        i -= 1;
+                    }
+                }
+
+                return inputList;
             }
-            if (eq.Contains('('))
+
+            List<string> solveMultiplication(List<string> inputList)
             {
-                eq = solveParenthesis(eq);
+                for (int i = 0; i < inputList.Count; i++)
+                {
+                    if (inputList[i] == "*")
+                    {
+                        double result = double.Parse((float.Parse(inputList[i - 1]) * float.Parse(inputList[i + 1])).ToString());
+                        inputList[i - 1] = result.ToString();
+                        inputList.RemoveAt(i + 1);
+                        inputList.RemoveAt(i);
+                        i -= 1;
+                    }
+                    if (inputList[i] == "/")
+                    {
+                        double result = double.Parse((float.Parse(inputList[i - 1]) / float.Parse(inputList[i + 1])).ToString());
+                        inputList[i - 1] = result.ToString();
+                        inputList.RemoveAt(i + 1);
+                        inputList.RemoveAt(i);
+                        i -= 1;
+                    }
+                }
+
+                return inputList;
             }
 
-            //change to list form for further processing
-            var eqValuesList = createEqList(eq);
+            string solveAddition(List<string> inputList)
+            {
+                for (int i = 0; i < inputList.Count; i++)
+                {
+                    if (inputList[i] == "+")
+                    {
+                        double result = double.Parse((float.Parse(inputList[i - 1]) + float.Parse(inputList[i + 1])).ToString());
+                        inputList[i - 1] = result.ToString();
+                        inputList.RemoveAt(i + 1);
+                        inputList.RemoveAt(i);
+                        i -= 1;
+                    }
+                    if (inputList[i] == "-")
+                    {
+                        double result = double.Parse((float.Parse(inputList[i - 1]) - float.Parse(inputList[i + 1])).ToString());
+                        inputList[i - 1] = result.ToString();
+                        inputList.RemoveAt(i + 1);
+                        inputList.RemoveAt(i);
+                        i -= 1;
+                    }
+                }
 
-            //perform all operations
-            eqValuesList = solveOperations(eqValuesList);
-
-            //convert list to string and return it
-            string result = string.Join("", eqValuesList);
-
-            return result;
+                return inputList[0];
+            }
         }
 
         public static string solveForX(string eq)
@@ -960,8 +957,8 @@ namespace AlgebraCalculatorApp.Views
 
         public static string findFactors(string eq)
         {
-            float number = Int32.Parse(eq);
-            float tempnum = Int32.Parse(eq);
+            float number = float.Parse(eq);
+            float tempnum = float.Parse(eq);
             int startnum = 2;
             List<int> divlist = new List<int>();
 
@@ -1252,6 +1249,30 @@ namespace AlgebraCalculatorApp.Views
 
         private void EqTypeBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (EqTypeBox != null && SqrtButton != null && SearchGraphHelpText != null && PrecisionSelectBox != null && PrecisionDataText != null && PrecisionLabel != null)
+            {
+                if (EqTypeBox.SelectedItem.ToString() == "Reduce Radicals")
+                {
+                    SqrtButton.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                }
+                else if(EqTypeBox.SelectedItem.ToString() == "Search Graph")
+                {
+                    SearchGraphHelpText.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                    PrecisionLabel.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                    PrecisionDataText.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                    PrecisionSelectBox.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                    XValLabel.Text = "Point to find:";
+                }
+                else
+                {
+                    SqrtButton.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                    SearchGraphHelpText.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                    PrecisionLabel.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                    PrecisionDataText.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                    PrecisionSelectBox.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                    XValLabel.Text = "X Value:";
+                }
+            }
             SolveLauncher();
         }
 
@@ -1276,7 +1297,7 @@ namespace AlgebraCalculatorApp.Views
                 {
                     return SolveTripleSystems(eqArr[0], eqArr[1], eqArr[2]);
                 }
-                catch (Exception ex)
+                catch
                 {
                     return "";
                 }
@@ -1371,6 +1392,478 @@ namespace AlgebraCalculatorApp.Views
 
                 return determinant;
             }
+        }
+
+        public static string SolveLinReg(string eq)
+        {
+            string[] PointsArr = eq.Split(new string[] { "(", ")" }, StringSplitOptions.RemoveEmptyEntries);
+            List<float[]> pointsList = new List<float[]>();
+
+            foreach(string s in PointsArr)
+            {
+                string[] tempArr = s.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
+                pointsList.Add(new float[] { float.Parse(tempArr[0]), float.Parse(tempArr[1]) });
+            }
+
+            //calculate average slope
+            List<float> slopesList = new List<float>();
+            for (int i = 1; i < pointsList.Count; i++)
+            {
+                float deltaX = pointsList[i][0] - pointsList[i - 1][0];
+                float deltaY = pointsList[i][1] - pointsList[i - 1][1];
+                float slope = (float)deltaY / (float)deltaX;
+                slopesList.Add(slope);
+            }
+            float averageSlope = 0;
+            float temp_total = 0;
+            foreach (float f in slopesList)
+            {
+                temp_total += f;
+            }
+            averageSlope = temp_total / (float)slopesList.Count;
+
+            //calculate y intercept
+            float pointX = pointsList[0][0];
+            float pointY = pointsList[0][1];
+            float intercept = averageSlope * pointX;
+            intercept = pointY - intercept;
+
+            string slopestring = averageSlope.ToString();
+            if(slopestring == "1")
+            {
+                slopestring = "";
+            }
+            if(slopestring == "-1")
+            {
+                slopestring = "-";
+            }
+
+            if (intercept > 0)
+            {
+                return $"Linear regression: y = {slopestring}x + {intercept}";
+            }
+            else if (intercept < 0)
+            {
+                return $"Linear regression: y = {slopestring}x {intercept}";
+            }
+            else
+            {
+                return $"Linear regression: y = {slopestring}x";
+            }
+        }
+
+        public string SolveForZeroesLauncher(string eq)
+        {
+            string solutions = "";
+            string remainder = "";
+            bool complete = true;
+            try
+            {
+                var PolynomialDivisionResults = DividePolynomial(eq);
+                solutions = string.Join(", ", PolynomialDivisionResults.Item2);
+                remainder = PolynomialDivisionResults.Item3;
+                if (!PolynomialDivisionResults.Item1)
+                {
+                    complete = false;
+                }
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
+
+            if (complete)
+            {
+                return $"Solutions: {solutions}";
+            }
+            else
+            {
+                return $"Solutions: {solutions}{Environment.NewLine}{remainder}";
+            }
+        }
+
+        public static (bool, List<int>, string) DividePolynomial(string eq)
+        {
+            int[] CoefficientsList = GetCoefficients(eq);
+
+            List<int> NumList = new List<int>(CoefficientsList);
+            List<int> SolutionsList = new List<int>();
+
+            //Division loop
+            for (int i = -25; i <= 25; i++)
+            {
+                (bool, List<int>) result = Divide(NumList, i);
+                if (result.Item1)
+                {
+                    SolutionsList.Add(i);
+                    NumList = result.Item2;
+                    i = -25;
+                }
+            }
+
+            //If only one item left it's completely factored
+            if (NumList.Count == 1)
+            {
+                return (true, SolutionsList, "");
+            }
+            //Otherwise there's a remainder
+            else
+            {
+                string remainderstring = $"Remainder: {GetRemainder(NumList)}";
+                return (false, SolutionsList, remainderstring);
+            }
+
+            //Format remainder text from a list of values
+            string GetRemainder(List<int> DataList)
+            {
+                int degree = DataList.Count - 1;
+                string result = "";
+                for (int i = 0; i < DataList.Count; i++)
+                {
+                    if (DataList[i] == 0)
+                    {
+                        continue;
+                    }
+
+                    string NumString = "";
+
+                    if (DataList[i] > 0)
+                    {
+                        NumString = $"+{DataList[i]}";
+                    }
+                    else
+                    {
+                        NumString = DataList[i].ToString();
+                    }
+
+                    if (degree - i > 1 && DataList[i] != 0)
+                    {
+                        result += $"{NumString}x^{degree - i}";
+                    }
+                    else if (degree - i == 1 && DataList[i] != 0)
+                    {
+                        result += $"{NumString}x";
+                    }
+                    else if (degree - i == 0 && DataList[i] != 0)
+                    {
+                        result += NumString;
+                    }
+                }
+
+                if (result[0] == '+')
+                {
+                    string tempresult = result;
+                    result = "";
+                    for (int i = 1; i < tempresult.Length; i++)
+                    {
+                        result += tempresult[i];
+                    }
+                }
+
+                return result;
+            }
+
+            (bool, List<int>) Divide(List<int> DataList, int n)
+            {
+                //algorithmic version of synthetic division
+                if (DataList.Count == 1)
+                {
+                    return (false, DataList);
+                }
+
+                List<int> NewList = new List<int>();
+
+                NewList.Add(DataList[0]);
+
+                for (int i = 1; i < DataList.Count; i++)
+                {
+                    NewList.Add((NewList[i - 1] * n) + DataList[i]);
+                }
+
+                if (NewList[NewList.Count - 1] == 0)
+                {
+                    NewList.RemoveAt(NewList.Count - 1);
+                    return (true, NewList);
+                }
+                else
+                {
+                    return (false, DataList);
+                }
+            }
+
+            int[] GetCoefficients(string equation)
+            {
+                int degree = 0;
+
+                //find the degree/highest power of the function
+                for (int i = 0; i < equation.Length; i++)
+                {
+                    if (equation[i] == '^')
+                    {
+                        degree = Int32.Parse(equation[i + 1].ToString());
+                        break;
+                    }
+                }
+
+                int[] ResultArr = new int[degree + 1];
+
+                //split on +/-, retaining -
+                string[] EqArr = CustomSplit(equation);
+
+                //extract coefficients
+                for (int i = degree; i > 0; i--)
+                {
+                    if (i != 1)
+                    {
+                        foreach (string s in EqArr)
+                        {
+                            if (s.Contains($"x^{i}"))
+                            {
+                                ResultArr[degree - i] = GetNum(s);
+                            }
+                        }
+                    }
+                    if (i == 1)
+                    {
+                        foreach (string s in EqArr)
+                        {
+                            if (s.Contains("x") && !s.Contains("^"))
+                            {
+                                ResultArr[degree - i] = GetNum(s);
+                            }
+                        }
+                    }
+                }
+
+                //extract constant
+                if (!EqArr[EqArr.Length - 1].Contains('x'))
+                {
+                    ResultArr[degree] = Int32.Parse(EqArr[EqArr.Length - 1]);
+                }
+                else
+                {
+                    ResultArr[degree] = 0;
+                }
+
+                return ResultArr;
+            }
+
+            int GetNum(string input)
+            {
+                string resultString = "";
+                for (int i = 0; i < input.Length; i++)
+                {
+                    if (input[i] == 'x')
+                    {
+                        if (resultString == "-")
+                        {
+                            return -1;
+                        }
+                        else if (resultString != "")
+                        {
+                            return Int32.Parse(resultString);
+                        }
+                        else
+                        {
+                            return 1;
+                        }
+                    }
+                    else
+                    {
+                        resultString += input[i];
+                    }
+                }
+
+                return 0;
+            }
+
+            string[] CustomSplit(string input)
+            {
+                List<string> resultList = new List<string>();
+
+                string temp = "";
+                for (int i = 0; i < input.Length; i++)
+                {
+                    if (input[i] == '+')
+                    {
+                        resultList.Add(temp);
+                        temp = "";
+                    }
+                    else if (input[i] == '-')
+                    {
+                        resultList.Add(temp);
+                        temp = "-";
+                    }
+                    else
+                    {
+                        temp += input[i];
+                    }
+                }
+
+                if (temp != "")
+                {
+                    resultList.Add(temp);
+                }
+
+                string[] resultArr = resultList.ToArray();
+
+                return resultArr;
+            }
+        }
+
+        async void SearchForValueLauncher(string eq, string xval)
+        {
+            try
+            {
+                SolveItem(eq, "1");
+            }
+            catch
+            {
+                return;
+            }
+
+            if (!validateSearchQuery(xval)) { return; }
+
+            string precisionstring = PrecisionSelectBox.SelectedItem.ToString();
+            DetectOutput.Text = await Task.Run(() => SearchForValue(eq, xval, precisionstring));
+            StatusLabel.Text = "Operation complete";
+
+            bool validateSearchQuery(string input)
+            {
+                if (input == null) { return false; }
+                if (input == "") { return false; }
+                if (!input.Contains("=")) { return false; }
+                string[] testArr = input.Split('=');
+                if(testArr[1] == "" || testArr[1] == " ") { return false; }
+                return true;
+            }
+        }
+
+        private Task<string> SearchForValue(string equation, string target, string precisionstring)
+        {
+            int minimum = 0;
+            int maximum = 0;
+            float interval = 0f;
+
+            if (precisionstring == "Low (fastest)")
+            {
+                minimum = -100;
+                maximum = 100;
+                interval = 1f;
+            }
+            else if(precisionstring == "Medium")
+            {
+                minimum = -100;
+                maximum = 100;
+                interval = 0.1f;
+            }
+            else if(precisionstring == "High (slowest)")
+            {
+                minimum = -5;
+                maximum = 5;
+                interval = 0.01f;
+            }
+
+            string[] targetArr = target.Split(new string[] { "=", " = " }, StringSplitOptions.RemoveEmptyEntries);
+            string axis = targetArr[0];
+            float value = float.Parse(targetArr[1]);
+
+            List<string[]> dataList = SolveTable(equation, minimum, maximum, interval);
+
+            List<string[]> resultsList = new List<string[]>();
+
+            if (axis.ToLower() == "x")
+            {
+                foreach (var item in dataList)
+                {
+                    float n = (float)Math.Round(float.Parse(item[0]), 2);
+                    if (n == value)
+                    {
+                        resultsList.Add(new string[] { Math.Round(float.Parse(item[0]), 2).ToString(), Math.Round(float.Parse(item[1]), 2).ToString() });
+                    }
+                }
+            }
+            else if (axis.ToLower() == "y")
+            {
+                foreach (var item in dataList)
+                {
+                    float n = (float)Math.Round(float.Parse(item[1]), 2);
+                    if (n == value)
+                    {
+                        resultsList.Add(new string[] { Math.Round(float.Parse(item[0]), 2).ToString(), Math.Round(float.Parse(item[1]), 2).ToString() });
+                    }
+                }
+            }
+
+            string result = "";
+
+            if(resultsList.Count == 0)
+            {
+                return Task.FromResult("No matches found");
+            }
+
+            resultsList = filterDuplicates(resultsList);
+
+            foreach(var item in resultsList)
+            {
+                result += $", ({item[0]}, {item[1]})";
+            }
+
+            result = result.Remove(0, 1);
+            result = "Results: " + result;
+
+            return Task.FromResult(result);
+
+            List<string[]> SolveTable(string eq, int min, int max, float scale)
+            {
+                List<string[]> outputList = new List<string[]>();
+                for (float f = min; f <= max; f += scale)
+                {
+                    string output = SolveItem(eq, f.ToString());
+                    outputList.Add(new string[] { f.ToString(), output });
+                }
+
+                return outputList;
+            }
+
+            List<string[]> filterDuplicates(List<string[]> inputList)
+            {
+                List<string[]> resultList = new List<string[]>();
+                for(int i = 0; i < inputList.Count; i++)
+                {
+                    if(resultList.Contains(inputList[i])) { continue; }
+                    resultList.Add(inputList[i]);
+                }
+                return resultList;
+            }
+        }
+
+        private void SqrtButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            DetectEqEntry.Text += "√";
+        }
+
+        private void PrecisionSelectBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(PrecisionDataText == null)
+            {
+                return;
+            }
+
+            if(PrecisionSelectBox.SelectedItem.ToString() == "Low (fastest)")
+            {
+                PrecisionDataText.Text = "Min: -10 Max: 10 Scale: 1";
+            }
+            else if(PrecisionSelectBox.SelectedItem.ToString() == "Medium")
+            {
+                PrecisionDataText.Text = "Min: -100 Max: 100 Scale: 1";
+            }
+            else if(PrecisionSelectBox.SelectedItem.ToString() == "High (fastest)")
+            {
+                PrecisionDataText.Text = "Min: -100 Max: 100 Scale: 0.1";
+            }
+
+            SearchForValueLauncher(DetectEqEntry.Text, DetectXvalEntry.Text);
         }
     }
 }

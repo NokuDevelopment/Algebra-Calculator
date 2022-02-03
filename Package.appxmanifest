@@ -10,7 +10,7 @@
   <Identity
     Name="55402NokuDevelopment.AlgebraCalculator"
     Publisher="CN=24DD6725-5545-4BF8-A4E0-2C3E2826867A"
-    Version="2.0.18.0" />
+    Version="2.4.1.0" />
 
   <mp:PhoneIdentity PhoneProductId="d00782f9-b680-494c-a6ea-092834b69bd1" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 

@@ -22,7 +22,7 @@ namespace AlgebraCalculatorApp.Views
 
         private void Button_Click_1(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            string uriToLaunch = @"https://drive.google.com/file/d/14OTf3mpnc1J20sT0F1-a7zZtIfbn01ms/view?usp=sharing";
+            string uriToLaunch = @"https://drive.google.com/file/d/16EN2MHE6mMZJO5_5PUXejUurCjNrkJGv/view?usp=sharing";
             var uri = new Uri(uriToLaunch);
             async void DefaultLaunch()
             {
@@ -39,7 +39,7 @@ namespace AlgebraCalculatorApp.Views
         private void Button_Click_3(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             // more apps button
-            string uriToLaunch = @"https://store.microsoft.com";
+            string uriToLaunch = @"https://www.microsoft.com/en-us/search/shop/Apps?q=noku+development";
             var uri = new Uri(uriToLaunch);
             async void DefaultLaunch2()
             {

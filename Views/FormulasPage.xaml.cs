@@ -40,7 +40,9 @@ namespace AlgebraCalculatorApp.Views
                 }
             }
 
-            string searchword = FormulasEntry.Text.ToLower();
+            if (FormulasEntry.Text == "") return;
+
+            string searchword = (FormulasEntry.Text == "*" || FormulasEntry.Text.ToLower() == "all") ? "" : FormulasEntry.Text.ToLower();
 
             foreach (string key in database.dict.Keys)
             {

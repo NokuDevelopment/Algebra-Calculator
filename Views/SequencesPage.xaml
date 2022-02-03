@@ -21,7 +21,7 @@
                 <TextBox Height="50" TextWrapping="Wrap" Width="100" Margin="285,280,0,0" Name="RecursiveInitialValue" TextChanged="RecursiveEqInput_TextChanged"/>
                 <TextBlock Text="Solve for n =" Style="{StaticResource BaseTextBlockStyle}" Margin="405,254,0,0"/>
                 <TextBox Height="50" TextWrapping="Wrap" Width="120" Margin="400,280,0,0" Name="RecursiveSolveValue" TextChanged="RecursiveEqInput_TextChanged"/>
-                <TextBlock Text="Sigma equation" Style="{StaticResource BaseTextBlockStyle}" Margin="20,358,0,0"/>
+                <TextBlock Text="Summation equation" Style="{StaticResource BaseTextBlockStyle}" Margin="20,358,0,0"/>
                 <TextBox Height="50" TextWrapping="Wrap" Width="250" Margin="20,384,0,0" Name="SigmaEqInput" TextChanged="SigmaEqInput_TextChanged" Text=""/>
                 <TextBlock Text="i₁ =" Style="{StaticResource BaseTextBlockStyle}" Margin="290,358,0,0"/>
                 <TextBox Height="50" TextWrapping="Wrap" Width="100" Margin="285,384,0,0" Name="SigmaInitialValue" TextChanged="SigmaEqInput_TextChanged"/>

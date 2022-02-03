@@ -1,11 +1,12 @@
-﻿Version 2.1.x Content update
+﻿*WHEN UPLOADING: Delete Microsoft.SDK.BUILDTOOLS from WAPProj
+CHANGE VERSION NUMBER ON HELP PAGE
+
+Last version: 2.4.2
 
 Features added:
-- Changed detect page interface
-- Removed detect equation mode
-- Added parenthesis recursion
-- Added systems of linear equations
-- Added systems of three linear equations
+- Changed "sigma" to "summation"
+- Added wildcard search to formulas page (type "*" or "all")
+- Added Plane Angle units (degrees and radians) to unit converter
+- Made "search graph" mode run asynchronously
 
 To do:
-- Add solve for x mode

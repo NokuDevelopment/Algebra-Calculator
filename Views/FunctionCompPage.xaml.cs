@@ -34,11 +34,11 @@ namespace AlgebraCalculatorApp.Views
             {
                 if (mode == "f(g(x))")
                 {
-                    return $"f(g({sxval})) = " + DetectPage.solveItem(fx, DetectPage.solveItem(gx, sxval));
+                    return $"f(g({sxval})) = " + DetectPage.SolveItem(fx, DetectPage.SolveItem(gx, sxval));
                 }
                 else if (mode == "g(f(x))")
                 {
-                    return $"g(f({sxval})) = " + DetectPage.solveItem(gx, DetectPage.solveItem(fx, sxval));
+                    return $"g(f({sxval})) = " + DetectPage.SolveItem(gx, DetectPage.SolveItem(fx, sxval));
                 }
             }
             catch

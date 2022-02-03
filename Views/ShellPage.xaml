@@ -29,6 +29,7 @@
             <winui:NavigationViewItem Content="Calculator" Icon="Calculator" helpers:NavHelper.NavigateTo="views:DetectPage" />
             <winui:NavigationViewItem Content="Function Composition" Icon="Cancel" helpers:NavHelper.NavigateTo="views:FunctionCompPage" />
             <winui:NavigationViewItem x:Uid="Shell_Sequences" Icon="Refresh" helpers:NavHelper.NavigateTo="views:SequencesPage" />
+            <winui:NavigationViewItem Content="Unit Converter" Icon="Switch" helpers:NavHelper.NavigateTo="views:ConvertPage"/>
             <winui:NavigationViewItem x:Uid="Shell_Formulas" Icon="Library" helpers:NavHelper.NavigateTo="views:FormulasPage" />
             <winui:NavigationViewItem Content="Info" Icon="Help" helpers:NavHelper.NavigateTo="views:HelpPage"/>
         </winui:NavigationView.MenuItems>
@@ -51,7 +52,11 @@
             </ic:EventTriggerBehavior>
         </i:Interaction.Behaviors>
         <Grid>
-            <Frame x:Name="shellFrame" Background="{StaticResource SystemControlAltMediumLowAcrylicWindowMediumBrush}"/>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="76*"/>
+                <RowDefinition Height="923*"/>
+            </Grid.RowDefinitions>
+            <Frame x:Name="shellFrame" Grid.RowSpan="2" Background="{StaticResource SystemControlAltMediumLowAcrylicWindowMediumBrush}"/>
         </Grid>
     </winui:NavigationView>
 </Page>

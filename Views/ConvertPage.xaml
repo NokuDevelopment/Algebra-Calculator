@@ -1,0 +1,84 @@
+﻿<Page
+    x:Class="AlgebraCalculatorApp.Views.ConvertPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Style="{StaticResource PageStyle}"
+    Background="{StaticResource SystemControlAltMediumLowAcrylicWindowMediumBrush}"
+    mc:Ignorable="d">
+    <Grid x:Name="ContentArea" Margin="{StaticResource MediumLeftRightMargin}">
+        <Grid
+            Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
+            <RelativePanel>
+                <TextBlock Text="Unit Converter" Height="78" Style="{StaticResource HeaderTextBlockStyle}" Margin="20,0,0,0"/>
+                <TextBlock Text="Input:" Style="{StaticResource BaseTextBlockStyle}" Margin="25,100,0,0"/>
+                <TextBox Name="InputBox" Width="225" Margin="25, 125, 0, 0" Height="50" TextChanged="InputBox_TextChanged"/>
+                <TextBlock Text="Input Unit:" Style="{StaticResource BaseTextBlockStyle}" Margin="25,200,0,0"/>
+                <ComboBox Height="50" Width="225" SelectedIndex="1" Margin="25,225,0,0" Name="InputUnitBox" SelectionChanged="InputUnitBox_SelectionChanged">
+                    <x:String>Kilometer</x:String>
+                    <x:String>Meter</x:String>
+                    <x:String>Centimeter</x:String>
+                    <x:String>Millimeter</x:String>
+                    <x:String>Mile</x:String>
+                    <x:String>Yard</x:String>
+                    <x:String>Foot</x:String>
+                    <x:String>Inch</x:String>
+                    <x:String>Kilogram</x:String>
+                    <x:String>Gram</x:String>
+                    <x:String>Milligram</x:String>
+                    <x:String>Pound</x:String>
+                    <x:String>Ounce</x:String>
+                    <x:String>Metric Ton</x:String>
+                    <x:String>US Ton</x:String>
+                    <x:String>Liter</x:String>
+                    <x:String>Milliliter</x:String>
+                    <x:String>Gallon</x:String>
+                    <x:String>Fluid Ounce</x:String>
+                    <x:String>Pint</x:String>
+                    <x:String>Quart</x:String>
+                    <x:String>Cup</x:String>
+                    <x:String>Fahrenheit</x:String>
+                    <x:String>Celsius</x:String>
+                    <x:String>Kelvin</x:String>
+                    <x:String>Degrees</x:String>
+                    <x:String>Radians</x:String>
+                </ComboBox>
+                <TextBlock Text="Output:" Style="{StaticResource BaseTextBlockStyle}" Margin="375,100,0,0"/>
+                <TextBox Name="OutputBox" Width="225" Margin="375, 125, 0, 0" Height="50" TextChanged="InputBox_TextChanged"/>
+                <TextBlock Text="Output Unit:" Style="{StaticResource BaseTextBlockStyle}" Margin="375,200,0,0"/>
+                <ComboBox Height="50" Width="225" Name="OutputUnitBox" SelectedIndex="1" Margin="375,225,0,0" SelectionChanged="InputUnitBox_SelectionChanged">
+                    <x:String>Kilometer</x:String>
+                    <x:String>Meter</x:String>
+                    <x:String>Centimeter</x:String>
+                    <x:String>Millimeter</x:String>
+                    <x:String>Mile</x:String>
+                    <x:String>Yard</x:String>
+                    <x:String>Foot</x:String>
+                    <x:String>Inch</x:String>
+                    <x:String>Kilogram</x:String>
+                    <x:String>Gram</x:String>
+                    <x:String>Milligram</x:String>
+                    <x:String>Pound</x:String>
+                    <x:String>Ounce</x:String>
+                    <x:String>Metric Ton</x:String>
+                    <x:String>US Ton</x:String>
+                    <x:String>Liter</x:String>
+                    <x:String>Milliliter</x:String>
+                    <x:String>Gallon</x:String>
+                    <x:String>Fluid Ounce</x:String>
+                    <x:String>Pint</x:String>
+                    <x:String>Quart</x:String>
+                    <x:String>Cup</x:String>
+                    <x:String>Fahrenheit</x:String>
+                    <x:String>Celsius</x:String>
+                    <x:String>Kelvin</x:String>
+                    <x:String>Degrees</x:String>
+                    <x:String>Radians</x:String>
+                </ComboBox>
+                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xe8ab;" Margin="300, 175, 0, 0" FontSize="20"/>
+                <TextBlock Name="StatusBlock" Margin="25, 300, 0, 0" Foreground="OrangeRed"/>
+            </RelativePanel>
+        </Grid>
+    </Grid>
+</Page>

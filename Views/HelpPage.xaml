@@ -36,10 +36,10 @@
                 </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
             <RelativePanel>
-                <TextBlock Name="VersionNumber" Text="Version 2.0.40" Margin="520,380,0,0" SelectionChanged="VersionNumber_SelectionChanged"/>
+                <TextBlock Name="VersionNumber" Text="Version 2.4.1" Margin="520,380,0,0" SelectionChanged="VersionNumber_SelectionChanged"/>
                 <Image Name="MainImage" Width="477" Height="449" Source="/Assets/logowhitebg.jpg" Margin="20, 0,0,0" Stretch="Uniform"/>
                 <TextBlock Name="HeaderTitle" Style="{StaticResource HeaderTextBlockStyle}" Text="About Noku" Margin="520,40,0,0" Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"/>
-                <TextBlock x:Name="BodyText" Style="{StaticResource BodyTextBlockStyle}" Margin="520, 125,20, 0"><Run Text="Noku Development is a one person programming venture aiming to create high quality apps that anyone can find useful.&#xA;&#xA;&#xA;Noku development is open to suggestions on how this app can be improved. Use the feedback form below to submit your suggestions."/><LineBreak/><Run/></TextBlock>
+                <TextBlock x:Name="BodyText" Style="{StaticResource BodyTextBlockStyle}" Margin="520, 125,20, 0"><Run Text="Noku Development strives to create quality programs that everyone can find useful.&#xA;&#xA;&#xA;If you have suggestions on how this app can be approved, please leave a review on the Microsoft Store or via the feedback link below."/><LineBreak/><Run/></TextBlock>
                 <Button Content="Instructions" Height="100" Margin="425,450,0,0" VerticalAlignment="Top" Width="385" Style="{StaticResource AccentButtonStyle}" Click="Button_Click_1"/>
                 <Button Content="Feedback" Height="100" Margin="20,450,0,0" VerticalAlignment="Top" Width="385" Style="{StaticResource ButtonRevealStyle}" Click="Button_Click"/>
                 <Button Content="More apps" Height="100" Margin="830,450,0,0" VerticalAlignment="Top" Width="260" Style="{StaticResource ButtonRevealStyle}" Click="Button_Click_3"/>

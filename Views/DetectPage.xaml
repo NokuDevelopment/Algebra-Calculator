@@ -23,13 +23,26 @@
                 <ComboBox Height="50" Width="228" Name="EqTypeBox" SelectedIndex="0" Margin="290,280,0,0" SelectionChanged="EqTypeBox_SelectionChanged">
                     <x:String>Basic/Equation</x:String>
                     <x:String>Quadratics</x:String>
+                    <x:String>Solve for Zeroes</x:String>
                     <x:String>Solve Logs</x:String>
                     <x:String>Reduce Radicals</x:String>
                     <x:String>Prime Factorization</x:String>
                     <x:String>Systems of Linear Equations</x:String>
+                    <x:String>Linear Regression</x:String>
+                    <x:String>Search Graph</x:String>
                 </ComboBox>
-                <TextBlock Text="X Value:" Style="{StaticResource BaseTextBlockStyle}" Margin="20,254,0,0"/>
+                <TextBlock Name="XValLabel" Text="X Value:" Style="{StaticResource BaseTextBlockStyle}" Margin="20,254,0,0"/>
                 <TextBox Height="50" TextWrapping="Wrap" Width="250" Margin="20,280,0,0" Name="DetectXvalEntry" TextChanged="DetectXvalEntry_TextChanged"/>
+                <TextBox Name="DetectSolveTypeLabel" Visibility="Collapsed"/>
+                <Button Name="SqrtButton" Margin="490, 235, 0, 0" Style="{StaticResource ButtonRevealStyle}" Visibility="Collapsed" Click="SqrtButton_Click">√</Button>
+                <TextBlock Name="SearchGraphHelpText" Style="{StaticResource BodyTextBlockStyle}" Margin="20, 330" Visibility="Collapsed">eg. x = 5, y = 7</TextBlock>
+                <TextBlock Name="PrecisionLabel" Text="Precision and range:" Style="{StaticResource BaseTextBlockStyle}" Margin="290,340,0,0" Visibility="Collapsed"/>
+                <ComboBox Height="50" Width="228" Name="PrecisionSelectBox" SelectedIndex="0" Margin="290,365,0,0" Visibility="Collapsed" SelectionChanged="PrecisionSelectBox_SelectionChanged">
+                    <x:String>Low (fastest)</x:String>
+                    <x:String>Medium</x:String>
+                    <x:String>High (slowest)</x:String>
+                </ComboBox>
+                <TextBlock Name="PrecisionDataText" Style="{StaticResource BodyTextBlockStyle}" Margin="290, 415" Visibility="Collapsed">Min: -10 Max: 10 Scale: 1</TextBlock>
             </RelativePanel>
         </Grid>
     </Grid>
